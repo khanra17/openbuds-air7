@@ -1,0 +1,40 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python scripts/check_repository.py
+      - run: cargo test --workspace --locked
+      - run: cargo build --workspace --release --locked
+      - name: Collect corresponding notices
+        shell: pwsh
+        run: |
+          cargo install cargo-about --version 0.9.2 --locked
+          cargo about generate about.hbs --output-file target/THIRD_PARTY_LICENSES.html
+      - name: Package and checksum
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist/openbuds-air7 -Force
+          Copy-Item target/release/buds.exe,target/release/buds-desktop.exe,LICENSE,THIRD_PARTY_NOTICES.md,README.md,target/THIRD_PARTY_LICENSES.html dist/openbuds-air7/
+          Copy-Item docs dist/openbuds-air7/docs -Recurse
+          Compress-Archive -Path dist/openbuds-air7 -DestinationPath dist/openbuds-air7-windows-x86_64.zip
+          $hash = (Get-FileHash dist/openbuds-air7-windows-x86_64.zip -Algorithm SHA256).Hash.ToLower()
+          "$hash  openbuds-air7-windows-x86_64.zip" | Set-Content dist/SHA256SUMS -Encoding ascii
+      - name: Publish tagged build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: gh release create $env:GITHUB_REF_NAME dist/openbuds-air7-windows-x86_64.zip dist/SHA256SUMS --verify-tag --generate-notes --title "OpenBuds Air7 $env:GITHUB_REF_NAME"

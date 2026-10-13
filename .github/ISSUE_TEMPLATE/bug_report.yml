@@ -1,0 +1,44 @@
+name: Bug report
+description: Report a reproducible, sanitized problem
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include Bluetooth addresses, host/preset names, raw logs, APKs or firmware. Do not trigger unsafe sound to reproduce a bug."
+  - type: input
+    id: version
+    attributes:
+      label: Application version or commit
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Earbud model and firmware
+      description: No serial number or address
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Windows version / Bluetooth adapter model
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: State wearing/in-case setup and starting configuration without identifiers
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Optional minimal sanitized evidence
+      description: No complete status export or wire/HCI capture

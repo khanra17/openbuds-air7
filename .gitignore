@@ -1,0 +1,16 @@
+/target/
+/research/
+/.pi/
+/.env
+/.env.*
+*.btsnoop
+*.apk
+*.ipa
+*.pcap
+*.pcapng
+*.log
+*.jsonl
+*.pyc
+__pycache__/
+.DS_Store
+Thumbs.db

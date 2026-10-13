@@ -1,0 +1,13 @@
+[package]
+name = "buds-desktop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "OpenBuds Air7 desktop Bluetooth controller"
+
+[dependencies]
+realme-buds = { path = "../realme-buds" }
+serde_json.workspace = true
+eframe = { version = "0.33", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }

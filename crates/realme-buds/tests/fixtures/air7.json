@@ -1,0 +1,212 @@
+[
+  {
+    "direction": "tx",
+    "command": "0106",
+    "transfer": 231,
+    "payload": "",
+    "frame": "aa0700000601e70000"
+  },
+  {
+    "direction": "tx",
+    "command": "010d",
+    "transfer": 232,
+    "payload": "0106",
+    "frame": "aa0900000d01e802000106"
+  },
+  {
+    "direction": "rx",
+    "command": "8106",
+    "transfer": 231,
+    "payload": "000301640264030a",
+    "frame": "aa0f00000681e70800000301640264030a"
+  },
+  {
+    "direction": "tx",
+    "command": "010c",
+    "transfer": 233,
+    "payload": "0101",
+    "frame": "aa0900000c01e902000101"
+  },
+  {
+    "direction": "rx",
+    "command": "810d",
+    "transfer": 232,
+    "payload": "00010600",
+    "frame": "aa0b00000d81e8040000010600"
+  },
+  {
+    "direction": "rx",
+    "command": "810c",
+    "transfer": 233,
+    "payload": "00010101",
+    "frame": "aa0b00000c81e9040000010101"
+  },
+  {
+    "direction": "tx",
+    "command": "010f",
+    "transfer": 235,
+    "payload": "",
+    "frame": "aa0700000f01eb0000"
+  },
+  {
+    "direction": "tx",
+    "command": "0100",
+    "transfer": 236,
+    "payload": "",
+    "frame": "aa0700000001ec0000"
+  },
+  {
+    "direction": "rx",
+    "command": "810f",
+    "transfer": 235,
+    "payload": "0000",
+    "frame": "aa0900000f81eb02000000"
+  },
+  {
+    "direction": "rx",
+    "command": "8100",
+    "transfer": 236,
+    "payload": "00bf0f5ae6659c40",
+    "frame": "aa0f00000081ec080000bf0f5ae6659c40"
+  },
+  {
+    "direction": "tx",
+    "command": "0101",
+    "transfer": 237,
+    "payload": "0002",
+    "frame": "aa0900000101ed02000002"
+  },
+  {
+    "direction": "rx",
+    "command": "8101",
+    "transfer": 237,
+    "payload": "00c008",
+    "frame": "aa0a00000181ed030000c008"
+  },
+  {
+    "direction": "tx",
+    "command": "0108",
+    "transfer": 246,
+    "payload": "0e01030405060b0c080d111f1a1b00",
+    "frame": "aa1600000801f60f000e01030405060b0c080d111f1a1b00"
+  },
+  {
+    "direction": "rx",
+    "command": "8108",
+    "transfer": 246,
+    "payload": "000a02010100020102010201030b020104080201060001010100010102010101030c0101040401010600",
+    "frame": "aa3100000881f62a00000a02010100020102010201030b020104080201060001010100010102010101030c0101040401010600"
+  },
+  {
+    "direction": "tx",
+    "command": "0109",
+    "transfer": 247,
+    "payload": "",
+    "frame": "aa0700000901f70000"
+  },
+  {
+    "direction": "rx",
+    "command": "8109",
+    "transfer": 247,
+    "payload": "0003010002000304",
+    "frame": "aa0f00000981f708000003010002000304"
+  },
+  {
+    "direction": "tx",
+    "command": "0110",
+    "transfer": 249,
+    "payload": "",
+    "frame": "aa0700001001f90000"
+  },
+  {
+    "direction": "rx",
+    "command": "8110",
+    "transfer": 249,
+    "payload": "0000",
+    "frame": "aa0900001081f902000000"
+  },
+  {
+    "direction": "tx",
+    "command": "0122",
+    "transfer": 251,
+    "payload": "",
+    "frame": "aa0700002201fb0000"
+  },
+  {
+    "direction": "rx",
+    "command": "8122",
+    "transfer": 251,
+    "payload": "000100fa06040a54657374507265736574063e00fafa0000e80302a00f00401ffd803efa",
+    "frame": "aa2b00002281fb2400000100fa06040a54657374507265736574063e00fafa0000e80302a00f00401ffd803efa"
+  },
+  {
+    "direction": "tx",
+    "command": "012c",
+    "transfer": 255,
+    "payload": "",
+    "frame": "aa0700002c01ff0000"
+  },
+  {
+    "direction": "tx",
+    "command": "0200",
+    "transfer": 0,
+    "payload": "",
+    "frame": "aa0700000002000000"
+  },
+  {
+    "direction": "rx",
+    "command": "812c",
+    "transfer": 255,
+    "payload": "0003fb05fb01fb050002fb050503",
+    "frame": "aa1500002c81ff0e000003fb05fb01fb050002fb050503"
+  },
+  {
+    "direction": "rx",
+    "command": "8200",
+    "transfer": 0,
+    "payload": "00020201",
+    "frame": "aa0b0000008200040000020201"
+  },
+  {
+    "direction": "tx",
+    "command": "0205",
+    "transfer": 3,
+    "payload": "020102",
+    "frame": "aa0a00000502030300020102"
+  },
+  {
+    "direction": "tx",
+    "command": "0403",
+    "transfer": 35,
+    "payload": "1d01",
+    "frame": "aa09000003042302001d01"
+  },
+  {
+    "direction": "rx",
+    "command": "8403",
+    "transfer": 35,
+    "payload": "00",
+    "frame": "aa080000038423010000"
+  },
+  {
+    "direction": "tx",
+    "command": "041b",
+    "transfer": 36,
+    "payload": "fb050001",
+    "frame": "aa0b00001b04240400fb050001"
+  },
+  {
+    "direction": "rx",
+    "command": "0508",
+    "transfer": 19,
+    "payload": "fb050001",
+    "frame": "aa0b00000805130400fb050001"
+  },
+  {
+    "direction": "rx",
+    "command": "841b",
+    "transfer": 3,
+    "payload": "0001",
+    "frame": "aa0900001b840301000001"
+  }
+]

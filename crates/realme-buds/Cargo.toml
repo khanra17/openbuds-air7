@@ -1,0 +1,19 @@
+[package]
+name = "realme-buds"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme = "README.md"
+description = "Transport-independent, reverse-engineered realme Buds Air7 control protocol"
+
+[dependencies]
+serde.workspace = true
+thiserror.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Networking_WinSock", "Win32_Devices_Bluetooth", "Win32_Foundation"] }
+
+[dev-dependencies]
+serde_json.workspace = true

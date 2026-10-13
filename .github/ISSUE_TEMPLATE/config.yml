@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security reporting
+    url: https://github.com/khanra17/openbuds-air7/security
+    about: Do not disclose sensitive vulnerabilities or identifiers in public issues
