@@ -1,6 +1,6 @@
 [workspace]
-members = ["crates/realme-buds", "crates/realme-buds-windows", "crates/realme-buds-ffi", "apps/cli", "apps/desktop"]
-default-members = ["crates/realme-buds", "crates/realme-buds-windows", "crates/realme-buds-ffi"]
+members = ["crates/realme-buds", "crates/realme-buds-windows", "bindings/c", "apps/cli", "apps/desktop"]
+default-members = ["crates/realme-buds", "crates/realme-buds-windows"]
 resolver = "2"
 
 [workspace.package]

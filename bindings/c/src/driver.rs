@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Type erasure at the foreign boundary, not shared wire semantics across models.
-use crate::error::{self, Failure};
+use crate::{
+    air7 as api,
+    runtime::{self as error, Failure},
+};
 use realme_buds::{Transport, devices::air7};
 use std::{
     any::Any,
@@ -31,7 +33,7 @@ impl Driver for Air7 {
         Ok(())
     }
     fn call(&mut self, request: &[u8], cancel: &AtomicBool) -> Result<Vec<u8>, Failure> {
-        let request: air7::api::Request = serde_json::from_slice(request)
+        let request: api::Request = serde_json::from_slice(request)
             .map_err(|e| Failure::new(error::INVALID_ARGUMENT, e.to_string()))?;
         let init = request.is_initialize();
         if !init && !self.initialized {
@@ -43,8 +45,7 @@ impl Driver for Air7 {
         if init {
             self.initialized = false;
         }
-        let result =
-            air7::api::execute(&mut self.client, request, || cancel.load(Ordering::Relaxed))?;
+        let result = api::execute(&mut self.client, request, || cancel.load(Ordering::Relaxed))?;
         if init {
             self.initialized = true;
         }

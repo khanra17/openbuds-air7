@@ -13,8 +13,9 @@ name = "openbuds"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-realme-buds = { path = "../realme-buds", features = ["json"] }
+realme-buds = { path = "../../crates/realme-buds" }
+serde.workspace = true
 serde_json.workspace = true
 
 [target.'cfg(windows)'.dependencies]
-realme-buds-windows = { path = "../realme-buds-windows" }
+realme-buds-windows = { path = "../../crates/realme-buds-windows" }

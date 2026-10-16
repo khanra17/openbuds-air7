@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Optional, driver-specific JSON command schema for C/other-language consumers.
-//! This is not a universal Realme protocol. Typed Rust callers need not enable `json`.
-use super::{advanced::ReadProperty, *};
-use crate::Transport;
+use realme_buds::{
+    Transport,
+    devices::air7::{advanced::ReadProperty, *},
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::time::Duration;
@@ -288,34 +288,58 @@ pub fn execute<T: Transport>(
             c.set_auto_power_off(minutes)?;
             Value::Null
         }
-        Request::RawRead { command, payload } => {
-            if !matches!(
-                command,
-                0x0105
-                    | 0x0106
-                    | 0x0107
-                    | 0x0108
-                    | 0x0109
-                    | 0x010b
-                    | 0x010c
-                    | 0x010d
-                    | 0x010f
-                    | 0x0110
-                    | 0x0112
-                    | 0x0122
-                    | 0x012c
-                    | 0x0200
-            ) {
-                return Err(Error::Invalid(
-                    "raw read not allowlisted; use a named SDK property read",
-                ));
-            }
-            value(c.request(command, payload)?)?
-        }
+        Request::RawRead { command, payload } => value(c.request_read_only(command, payload)?)?,
     };
     Ok(Response {
         schema_version: SCHEMA_VERSION,
         driver: DRIVER_ID,
         data,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Request;
+    #[test]
+    fn json_requests_reject_unknown_operations_fields_and_bad_identifiers() {
+        for request in [
+            r#"{"op":"invented"}"#,
+            r#"{"op":"noise","typo":true}"#,
+            r#"{"op":"set_noise","mode":"Maximum","typo":true}"#,
+            r#"{"op":"set_noise","mode":"NotAMode"}"#,
+            r#"{"op":"set_feature","feature":"Unknown","enabled":true}"#,
+        ] {
+            assert!(
+                serde_json::from_str::<Request>(request).is_err(),
+                "accepted {request}"
+            );
+        }
+    }
+    #[test]
+    fn safety_confirmations_are_required_not_implicit_defaults() {
+        for request in [
+            r#"{"op":"find_for","duration_ms":1000}"#,
+            r#"{"op":"run_fit_test","timeout_ms":1000}"#,
+            r#"{"op":"set_volume_enhancer","enabled":true}"#,
+            r#"{"op":"set_feature_id","id":99,"enabled":true}"#,
+        ] {
+            assert!(
+                serde_json::from_str::<Request>(request).is_err(),
+                "accepted {request}"
+            );
+        }
+    }
+    #[test]
+    fn handshake_is_explicit_and_other_requests_are_not_handshakes() {
+        assert!(
+            serde_json::from_str::<Request>(r#"{"op":"initialize"}"#)
+                .unwrap()
+                .is_initialize()
+        );
+        assert!(
+            !serde_json::from_str::<Request>(r#"{"op":"noise"}"#)
+                .unwrap()
+                .is_initialize()
+        );
+    }
 }

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Desktop presentation and UI-only preferences; Bluetooth I/O lives in worker.rs.
 use crate::worker::{Action, Reply, start_worker};
 use ::realme_buds::devices::air7 as realme_buds;
 use eframe::egui;
@@ -13,13 +12,12 @@ use std::{
     sync::{
         Arc,
         atomic::{AtomicBool, Ordering},
-        mpsc::{self, Receiver, Sender},
+        mpsc::{Receiver, Sender},
     },
     time::Duration,
 };
 
 pub(crate) struct App {
-    demo: bool,
     tx: Sender<Action>,
     rx: Receiver<Reply>,
     devices: Vec<(String, String)>,
@@ -41,41 +39,18 @@ pub(crate) struct App {
     anc_preferences: BTreeMap<String, AncPreference>,
 }
 impl App {
-    pub(crate) fn new(demo: bool) -> Self {
+    pub(crate) fn new() -> Self {
         let cancel = Arc::new(AtomicBool::new(false));
-        let (tx, rx) = if demo {
-            // No worker, enumeration, SDP lookup or Bluetooth transport exists in demo mode.
-            let (tx, _commands) = mpsc::channel();
-            let (_replies, rx) = mpsc::channel();
-            (tx, rx)
-        } else {
-            start_worker(cancel.clone())
-        };
-        let state = if demo {
-            crate::demo::snapshot()
-        } else {
-            Snapshot::default()
-        };
-        let mut preferences = BTreeMap::new();
-        if let Some(n) = state.noise {
-            let mut p = AncPreference::default();
-            p.observe(n);
-            preferences.insert(String::new(), p);
-        }
+        let (tx, rx) = start_worker(cancel.clone());
         Self {
-            demo,
             tx,
             rx,
             devices: Vec::new(),
             address: String::new(),
-            state,
-            connected: demo,
+            state: Snapshot::default(),
+            connected: false,
             busy: false,
-            status: if demo {
-                "Offline demo · synthetic data · Bluetooth disabled".into()
-            } else {
-                "Pair the Air7 in Windows Settings, then connect. Close other control clients if the channel is busy.".into()
-            },
+            status: "Pair the Air7 in Windows Settings, then connect.".into(),
             error: false,
             editor: CustomEq::air7(0, "Example EQ", [0; 6]),
             new_eq: true,
@@ -86,14 +61,10 @@ impl App {
             cancel,
             sound_active: false,
             fit_results: Vec::new(),
-            anc_preferences: preferences,
+            anc_preferences: BTreeMap::new(),
         }
     }
     fn send(&mut self, a: Action) {
-        if self.demo {
-            self.status = "Offline demo: hardware actions are disabled.".into();
-            return;
-        }
         if matches!(
             a,
             Action::Fit(true) | Action::Connect(_) | Action::Disconnect
@@ -616,10 +587,6 @@ impl eframe::App for App {
             ui.heading("OpenBuds Air7");
             ui.small("Independent controller for realme Buds Air7");
             ui.horizontal_wrapped(|ui| {
-                if self.demo {
-                    ui.label("Offline preview — no device identifiers");
-                    return;
-                }
                 ui.add_enabled_ui(!self.connected && !self.busy, |ui| {
                     egui::ComboBox::from_id_salt("devices")
                         .selected_text(if self.address.is_empty() {
@@ -719,22 +686,5 @@ impl eframe::App for App {
                 });
         }
         ctx.request_repaint_after(Duration::from_millis(100));
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn offline_demo_refuses_hardware_actions() {
-        let mut app = App::new(true);
-        let initial = app.state.features.clone();
-        app.send(Action::Feature(Feature::GameMode, true));
-        assert_eq!(app.state.features, initial);
-        assert!(!app.busy);
-        assert!(!app.sound_active);
-        assert!(app.status.contains("disabled"));
-        // The receiver was never handed to a Bluetooth worker.
-        assert!(app.tx.send(Action::Refresh).is_err());
     }
 }

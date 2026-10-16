@@ -5,17 +5,11 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
-readme = "README.md"
 description = "Transport-independent, explicitly model-scoped Realme earbud SDK"
-
-[features]
-default = []
-json = ["dep:serde_json"]
 
 [dependencies]
 serde.workspace = true
 thiserror.workspace = true
-serde_json = { workspace = true, optional = true }
 
 [dev-dependencies]
 serde_json.workspace = true

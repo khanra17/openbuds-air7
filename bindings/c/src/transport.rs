@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-use crate::error::{self, Failure};
+use crate::runtime::{self as error, Failure};
 use realme_buds::Transport;
 use std::{
     ffi::c_void,

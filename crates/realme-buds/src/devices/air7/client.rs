@@ -144,6 +144,35 @@ impl<T: Transport> Client<T> {
         self.ensure_supported(command)?;
         self.request_read_or_checked(command, payload.into())
     }
+    /// Raw queries restricted to known read-only commands.
+    pub fn request_read_only(
+        &mut self,
+        command: u16,
+        payload: impl Into<Vec<u8>>,
+    ) -> Result<Vec<u8>> {
+        if !matches!(
+            command,
+            0x0105
+                | 0x0106
+                | 0x0107
+                | 0x0108
+                | 0x0109
+                | 0x010b
+                | 0x010c
+                | 0x010d
+                | 0x010f
+                | 0x0110
+                | 0x0112
+                | 0x0122
+                | 0x012c
+                | 0x0200
+        ) {
+            return Err(Error::Invalid(
+                "raw read not allowlisted; use a named SDK property read",
+            ));
+        }
+        self.request(command, payload)
+    }
     /// Internal path for an explicitly enumerated read-only SDK property probe.
     pub(crate) fn request_read_or_checked(
         &mut self,

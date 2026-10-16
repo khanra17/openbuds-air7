@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Command handlers delegate parsing, semantics and transport state to realme-buds.
 use crate::args::*;
 use ::realme_buds::Transport;
 use ::realme_buds::devices::air7 as realme_buds;

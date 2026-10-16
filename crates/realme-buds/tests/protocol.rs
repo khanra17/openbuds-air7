@@ -350,6 +350,12 @@ fn invalid_settings_do_not_touch_transport() {
     assert!(c.set_eq_preset(5).is_err());
     assert!(c.set_touch(&[]).is_err());
     assert!(c.set_timeout(Duration::ZERO).is_err());
+    for command in [0, 0x0400, 0x0403, 0x0404, 0x0405] {
+        assert!(matches!(
+            c.request_read_only(command, vec![]),
+            Err(Error::Invalid(_))
+        ));
+    }
     assert!(c.into_transport().written.is_empty());
 }
 

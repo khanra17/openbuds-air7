@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Background Bluetooth actor. Frontend actions delegate all wire logic to the library.
 use ::realme_buds::devices::air7 as realme_buds;
 use realme_buds::{
     AncLevel, CustomEq, DynamicBand, EqAction, Event, Feature, NoiseCycle, NoiseMode, Snapshot,

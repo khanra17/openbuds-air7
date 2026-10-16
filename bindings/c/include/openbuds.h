@@ -35,10 +35,10 @@ enum { OB_AIR7_OFF=1, OB_AIR7_TRANSPARENCY=2, OB_AIR7_MILD=4, OB_AIR7_MAXIMUM=8,
  * Calls are serialized per handle but may run on different caller threads. Context must
  * support this, or the application must keep all calls on its transport-owning thread.
  */
-typedef ob_status_v1 (*ob_read_v1)(void*,uint8_t*,size_t,uint32_t,size_t*);
-typedef ob_status_v1 (*ob_write_v1)(void*,const uint8_t*,size_t,size_t*);
-typedef ob_status_v1 (*ob_flush_v1)(void*);
-typedef void (*ob_release_v1)(void*);
+typedef ob_status_v1 (*ob_read_v1)(void *context,uint8_t *dst,size_t capacity,uint32_t timeout_ms,size_t *read_count);
+typedef ob_status_v1 (*ob_write_v1)(void *context,const uint8_t *src,size_t length,size_t *write_count);
+typedef ob_status_v1 (*ob_flush_v1)(void *context);
+typedef void (*ob_release_v1)(void *context);
 typedef struct ob_transport_v1 {
  uint32_t struct_size,abi_version;
  void *context;
@@ -52,30 +52,30 @@ typedef struct ob_transport_v1 {
  * UTF-8/JSON outputs are length-delimited, NOT NUL terminated. Free only with this DLL.
  * Callback-table validation failures do not transfer the context lease. After validation
  * and model acceptance, release is also called if subsequent construction fails.
- * No ABI uses Rust layout, exceptions, Vec, String, bool, or a platform-sized enum.
  */
 OB_API uint32_t ob_v1_abi_version(void);
-OB_API ob_status_v1 ob_v1_driver_catalog(ob_buffer_v1*);
+OB_API ob_status_v1 ob_v1_driver_catalog(ob_buffer_v1 *out);
 /* Remembered Windows devices, not an active inquiry. Contains private names/addresses.
  * connected is a host observation, not evidence of control-service ownership/model identity. */
-OB_API ob_status_v1 ob_v1_windows_paired_devices(ob_buffer_v1*);
-OB_API ob_status_v1 ob_v1_open(const uint8_t*,size_t,const ob_transport_v1*,ob_handle_v1*);
-OB_API ob_status_v1 ob_v1_open_windows(const uint8_t*,size_t,const uint8_t*,size_t,ob_handle_v1*);
-OB_API ob_status_v1 ob_v1_initialize(ob_handle_v1);
-OB_API ob_status_v1 ob_v1_set_timeout(ob_handle_v1,uint32_t);
-OB_API ob_status_v1 ob_v1_call(ob_handle_v1,const uint8_t*,size_t,ob_buffer_v1*);
+OB_API ob_status_v1 ob_v1_windows_paired_devices(ob_buffer_v1 *out);
+OB_API ob_status_v1 ob_v1_open(const uint8_t *model,size_t model_len,const ob_transport_v1 *transport,ob_handle_v1 *out);
+OB_API ob_status_v1 ob_v1_open_windows(const uint8_t *model,size_t model_len,const uint8_t *address,size_t address_len,ob_handle_v1 *out);
+OB_API ob_status_v1 ob_v1_initialize(ob_handle_v1 handle);
+OB_API ob_status_v1 ob_v1_set_timeout(ob_handle_v1 handle,uint32_t milliseconds);
+OB_API ob_status_v1 ob_v1_call(ob_handle_v1 handle,const uint8_t *request,size_t request_len,ob_buffer_v1 *out);
 /* cancel is nonblocking; currently observed by bounded fit/finding helpers. Other calls
  * use the configured I/O timeout. Cancellation is not a hardware watchdog. */
-OB_API ob_status_v1 ob_v1_cancel(ob_handle_v1);
+OB_API ob_status_v1 ob_v1_cancel(ob_handle_v1 handle);
 /* BUSY does not destroy the handle. Cancel/wait for in-flight calls, then retry close.
  * A successful close releases context before returning. Never close from its callback. */
-OB_API ob_status_v1 ob_v1_close(ob_handle_v1);
-OB_API ob_status_v1 ob_v1_buffer_release(ob_buffer_v1*);
-/* Error state is per caller thread; retrieve immediately after a failed call. */
-OB_API ob_status_v1 ob_v1_last_error(ob_error_info_v1*,ob_buffer_v1*);
-OB_API ob_status_v1 ob_v1_air7_get_noise(ob_handle_v1,ob_air7_noise_v1*);
-OB_API ob_status_v1 ob_v1_air7_set_noise(ob_handle_v1,uint32_t);
-OB_API ob_status_v1 ob_v1_air7_set_feature(ob_handle_v1,uint32_t,uint32_t);
+OB_API ob_status_v1 ob_v1_close(ob_handle_v1 handle);
+OB_API ob_status_v1 ob_v1_buffer_release(ob_buffer_v1 *buffer);
+/* Error state is per thread; retrieve immediately after failure. Success clears the slot,
+ * including last_error itself, which returns a copy. Release its message buffer. */
+OB_API ob_status_v1 ob_v1_last_error(ob_error_info_v1 *info,ob_buffer_v1 *message);
+OB_API ob_status_v1 ob_v1_air7_get_noise(ob_handle_v1 handle,ob_air7_noise_v1 *out);
+OB_API ob_status_v1 ob_v1_air7_set_noise(ob_handle_v1 handle,uint32_t mode);
+OB_API ob_status_v1 ob_v1_air7_set_feature(ob_handle_v1 handle,uint32_t feature,uint32_t enabled);
 #ifdef __cplusplus
 }
 #endif

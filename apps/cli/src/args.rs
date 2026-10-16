@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Public command-line surface. Numeric raw mode is explicit, not the default UI.
 use ::realme_buds::devices::air7 as realme_buds;
 use clap::{Parser, Subcommand, ValueEnum};
 use realme_buds::{AncLevel, Feature, NoiseCycle, NoiseMode};

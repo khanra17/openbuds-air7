@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-//! Explicit Air7 driver. Opcodes, wire values, DTOs and quirks in this module are not
-//! a vendor-wide contract. Other models must opt into a separate implementation.
+//! Air7 protocol and state.
 
 pub const DRIVER_ID: &str = "realme.buds-air7";
 pub const CONTROL_SERVICE: crate::transport::ServiceUuid = crate::transport::ServiceUuid([
     0x00, 0x00, 0x07, 0x9a, 0xd1, 0x02, 0x11, 0xe1, 0x9b, 0x23, 0x00, 0x02, 0x5b, 0x00, 0xa5, 0xa5,
 ]);
 pub mod advanced;
-#[cfg(feature = "json")]
-pub mod api;
 pub mod client;
 pub mod codec;
 pub mod commands;
