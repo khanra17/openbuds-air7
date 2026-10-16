@@ -75,11 +75,41 @@ pub unsafe extern "C" fn ob_v1_driver_catalog(out: *mut BufferV1) -> i32 {
         unsafe {
             output(out, BufferV1::default())?;
         }
-        let data=serde_json::to_vec(&serde_json::json!({"abi_version":1,"sdk_version":env!("CARGO_PKG_VERSION"),"drivers":realme_buds::devices::DRIVER_IDS})).map_err(|e|Failure::new(error::INTERNAL,e.to_string()))?;
+        let data=serde_json::to_vec(&serde_json::json!({"abi_version":1,"sdk_version":env!("CARGO_PKG_VERSION"),"drivers":realme_buds::devices::DRIVER_IDS,"connection_metadata":{(air7::DRIVER_ID):{"kind":"rfcomm","service_uuid_be":air7::CONTROL_SERVICE.0}}})).map_err(|e|Failure::new(error::INTERNAL,e.to_string()))?;
         unsafe {
             output(out, buffer::allocate(data)?)?;
         }
         Ok(())
+    })
+}
+
+/// Enumerate remembered Windows devices without inquiry or choosing a driver.
+/// Names/addresses are private identifiers; host connection flags are not control-session state.
+/// # Safety
+/// `out` is writable BufferV1 storage with no outstanding allocation.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn ob_v1_windows_paired_devices(out: *mut BufferV1) -> i32 {
+    guard(|| {
+        unsafe {
+            output(out, BufferV1::default())?;
+        }
+        #[cfg(windows)]
+        {
+            let devices = realme_buds_windows::paired_devices()?;
+            let data = serde_json::to_vec(&serde_json::json!({"abi_version":1,"devices":devices}))
+                .map_err(|e| Failure::new(error::INTERNAL, e.to_string()))?;
+            unsafe {
+                output(out, buffer::allocate(data)?)?;
+            }
+            Ok(())
+        }
+        #[cfg(not(windows))]
+        {
+            Err(Failure::new(
+                error::UNSUPPORTED,
+                "native Windows enumeration is unavailable on this platform",
+            ))
+        }
     })
 }
 

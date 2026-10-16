@@ -7,11 +7,13 @@ Download a matching `openbuds-sdk-*` archive from [releases](https://github.com/
 ## Lifecycle
 
 1. Load the binary matching your process architecture; require `ob_v1_abi_version() == 1`.
-2. Select a driver explicitly. `ob_v1_driver_catalog` is offline metadata, not Bluetooth discovery.
+2. Select a driver explicitly. `ob_v1_driver_catalog` is offline metadata, not Bluetooth discovery. Its `connection_metadata` provides driver-specific transport requirements; `service_uuid_be` is a 16-byte UUID in network order. Missing metadata is unknown, never an Air7 fallback.
 3. Open `realme.buds-air7` using `ob_v1_open_windows`, or provide a timed reliable byte stream through `ob_v1_open` callbacks.
 4. Initialize with `ob_v1_initialize` or the driver's `initialize` request.
 5. Execute commands on a worker thread. Read back mutations; never retry an uncertain write automatically.
 6. Release every output using `ob_v1_buffer_release`. Close the session before destroying callbacks or unloading the library.
+
+`ob_v1_windows_paired_devices` optionally enumerates remembered Windows devices without active inquiry. It returns private names/addresses and host connection flags, not verified model identity or control-session ownership. It is not called by offline examples/tests; other hosts provide discovery themselves.
 
 See the authoritative [C header](../include/openbuds.h), [standalone C/CMake consumer](../examples/c/abi_smoke.c) and [Python consumer](../examples/python/openbuds.py). The Python example defaults to an offline catalog read; `--address` opts into Windows hardware access.
 

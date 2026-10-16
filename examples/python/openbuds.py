@@ -21,6 +21,7 @@ class OpenBuds:
         signatures = {
             "abi_version": (c.c_uint32, []),
             "driver_catalog": (c.c_int32, [c.POINTER(Buffer)]),
+            "windows_paired_devices": (c.c_int32, [c.POINTER(Buffer)]),
             "open_windows": (c.c_int32, [c.c_char_p, c.c_size_t, c.c_char_p, c.c_size_t, c.POINTER(c.c_uint64)]),
             "initialize": (c.c_int32, [c.c_uint64]),
             "call": (c.c_int32, [c.c_uint64, c.c_char_p, c.c_size_t, c.POINTER(Buffer)]),
@@ -57,6 +58,12 @@ class OpenBuds:
     def catalog(self):
         buffer = Buffer()
         self._check(self._driver_catalog(c.byref(buffer)))
+        return self._json(buffer)
+
+    def paired_windows_devices(self):
+        """Contains private identifiers; does not infer a device driver."""
+        buffer = Buffer()
+        self._check(self._windows_paired_devices(c.byref(buffer)))
         return self._json(buffer)
 
     def connect_windows(self, address, model="realme.buds-air7"):

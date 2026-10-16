@@ -203,6 +203,12 @@ fn buffer_ids_are_checked_and_cannot_be_session_handles() {
     let mut b = BufferV1::default();
     assert_eq!(unsafe { ob_v1_driver_catalog(&mut b) }, 0);
     assert_ne!(b.id, h);
+    let metadata: serde_json::Value =
+        serde_json::from_slice(unsafe { std::slice::from_raw_parts(b.data, b.len) }).unwrap();
+    assert_eq!(
+        metadata["connection_metadata"]["realme.buds-air7"]["service_uuid_be"],
+        serde_json::json!(realme_buds::devices::air7::CONTROL_SERVICE.0)
+    );
     assert_eq!(ob_v1_close(b.id), 3);
     let mut duplicate = b;
     assert_eq!(unsafe { ob_v1_buffer_release(&mut b) }, 0);
@@ -231,6 +237,14 @@ fn errors_are_per_thread_and_include_owned_utf8() {
     assert_eq!(e.status, 3);
     assert_eq!(unsafe { ob_v1_buffer_release(&mut b) }, 0);
 }
+#[cfg(not(windows))]
+#[test]
+fn windows_enumeration_is_unavailable_without_touching_host_hardware() {
+    let mut b = BufferV1::default();
+    assert_eq!(unsafe { ob_v1_windows_paired_devices(&mut b) }, 7);
+    assert_eq!(b.id, 0);
+}
+
 #[test]
 fn pod_layout_and_invalid_output_contract_are_explicit() {
     assert_eq!(std::mem::size_of::<Air7NoiseV1>(), 4);

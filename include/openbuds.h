@@ -56,6 +56,9 @@ typedef struct ob_transport_v1 {
  */
 OB_API uint32_t ob_v1_abi_version(void);
 OB_API ob_status_v1 ob_v1_driver_catalog(ob_buffer_v1*);
+/* Remembered Windows devices, not an active inquiry. Contains private names/addresses.
+ * connected is a host observation, not evidence of control-service ownership/model identity. */
+OB_API ob_status_v1 ob_v1_windows_paired_devices(ob_buffer_v1*);
 OB_API ob_status_v1 ob_v1_open(const uint8_t*,size_t,const ob_transport_v1*,ob_handle_v1*);
 OB_API ob_status_v1 ob_v1_open_windows(const uint8_t*,size_t,const uint8_t*,size_t,ob_handle_v1*);
 OB_API ob_status_v1 ob_v1_initialize(ob_handle_v1);
