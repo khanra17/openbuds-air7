@@ -41,7 +41,7 @@ For a maintainer-built SDK archive, build an explicit target and generate notice
 
 ```sh
 cargo build -p realme-buds-ffi --release --locked --target YOUR_NATIVE_TARGET
-cargo install cargo-about --version 0.9.2 --locked
+cargo install cargo-about --version 0.9.2 --locked --features cli
 cargo about generate about.hbs --output-file target/THIRD_PARTY_LICENSES.html
 python scripts/package_sdk.py --target YOUR_NATIVE_TARGET --notices target/THIRD_PARTY_LICENSES.html
 ```

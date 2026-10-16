@@ -12,7 +12,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: notices
-      - run: cargo install cargo-about --version 0.9.2 --locked
+      - run: cargo install cargo-about --version 0.9.2 --locked --features cli
       - run: mkdir -p target && cargo about generate about.hbs --output-file target/THIRD_PARTY_LICENSES.html
       - uses: actions/upload-artifact@v4
         with:
