@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   privacy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,21 +17,8 @@ jobs:
           python-version: '3.x'
       - run: python -m unittest discover -s scripts/tests -v
       - run: python scripts/check_repository.py
-  core:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo fmt --all -- --check
-      - run: cargo test -p realme-buds --locked
-      - run: cargo clippy -p realme-buds --all-targets --locked -- -D warnings
-      - run: cargo doc -p realme-buds --no-deps --locked
+  sdk:
+    uses: ./.github/workflows/sdk.yml
   windows-apps:
     runs-on: windows-latest
     steps:
@@ -40,7 +27,7 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --workspace --locked
-      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --all-features --locked
+      - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
       - run: cargo build --workspace --locked
-      - run: cargo doc --workspace --no-deps --locked
+      - run: cargo doc --workspace --no-deps --all-features --locked

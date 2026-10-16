@@ -5,10 +5,11 @@ on:
 permissions:
   contents: read
 jobs:
-  windows:
+  sdk:
+    uses: ./.github/workflows/sdk.yml
+  windows-apps:
+    needs: sdk
     runs-on: windows-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -16,25 +17,48 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dependency-notices
+          path: target/notices
       - run: python scripts/check_repository.py
-      - run: cargo test --workspace --locked
-      - run: cargo build --workspace --release --locked
-      - name: Collect corresponding notices
-        shell: pwsh
-        run: |
-          cargo install cargo-about --version 0.9.2 --locked
-          cargo about generate about.hbs --output-file target/THIRD_PARTY_LICENSES.html
-      - name: Package and checksum
+      - run: cargo test --workspace --all-features --locked
+      - run: cargo build -p buds-cli -p buds-desktop --release --locked
+      - name: Package Windows frontends separately from the SDK
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path dist/openbuds-air7 -Force
-          Copy-Item target/release/buds.exe,target/release/buds-desktop.exe,LICENSE,THIRD_PARTY_NOTICES.md,README.md,target/THIRD_PARTY_LICENSES.html dist/openbuds-air7/
+          Copy-Item target/release/buds.exe,target/release/buds-desktop.exe,LICENSE,THIRD_PARTY_NOTICES.md,README.md,target/notices/THIRD_PARTY_LICENSES.html dist/openbuds-air7/
           Copy-Item docs dist/openbuds-air7/docs -Recurse
           Compress-Archive -Path dist/openbuds-air7 -DestinationPath dist/openbuds-air7-windows-x86_64.zip
-          $hash = (Get-FileHash dist/openbuds-air7-windows-x86_64.zip -Algorithm SHA256).Hash.ToLower()
-          "$hash  openbuds-air7-windows-x86_64.zip" | Set-Content dist/SHA256SUMS -Encoding ascii
-      - name: Publish tagged build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openbuds-apps-windows-x86_64
+          path: dist/*.zip
+          if-no-files-found: error
+  publish:
+    needs: [sdk, windows-apps]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check tag matches the workspace version
+        run: python -c 'import os,tomllib; assert os.environ["GITHUB_REF_NAME"] == "v" + tomllib.load(open("Cargo.toml","rb"))["workspace"]["package"]["version"]'
+      - run: python scripts/check_repository.py
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: openbuds-*
+          path: dist
+          merge-multiple: true
+      - name: Include corresponding audited source and checksums
+        run: |
+          git archive --format=tar.gz --output="dist/openbuds-source-${GITHUB_REF_NAME}.tar.gz" HEAD
+          sha256sum dist/*.zip dist/*.tar.gz | sed 's@dist/@@' > dist/SHA256SUMS
+      - name: Publish tested native SDKs and separate Windows frontends
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: gh release create $env:GITHUB_REF_NAME dist/openbuds-air7-windows-x86_64.zip dist/SHA256SUMS --verify-tag --generate-notes --title "OpenBuds Air7 $env:GITHUB_REF_NAME"
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip dist/*.tar.gz dist/SHA256SUMS --verify-tag --generate-notes --title "OpenBuds $GITHUB_REF_NAME"

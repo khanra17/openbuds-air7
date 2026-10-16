@@ -1,0 +1,20 @@
+[package]
+name = "realme-buds-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme = "README.md"
+description = "Versioned C ABI for the model-scoped earbud SDK"
+
+[lib]
+name = "openbuds"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+realme-buds = { path = "../realme-buds", features = ["json"] }
+serde_json.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+realme-buds-windows = { path = "../realme-buds-windows" }

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-use realme_buds::{
-    Client, Error, Transport,
+use realme_buds::Transport;
+use realme_buds::devices::air7::{
+    Client, Error,
     codec::{Decoder, Packet, encode},
     model::*,
 };
@@ -460,7 +461,7 @@ fn multi_reply_status_query_uses_device_event_counter_and_keeps_unrelated_events
 
 #[test]
 fn under_the_hood_parsers_handle_zero_and_truncated_counts() {
-    use realme_buds::advanced::*;
+    use realme_buds::devices::air7::advanced::*;
     assert!(parse_status_features(&[0]).unwrap().is_empty());
     assert!(parse_stored_data(&[0]).unwrap().is_empty());
     assert!(parse_status_features(&[1, 2, 0]).is_err());
@@ -624,7 +625,7 @@ fn fit_start_wait_is_cancellable_before_acknowledgement() {
         .unwrap();
     assert_eq!(
         sent.iter()
-            .filter(|p| p.command == realme_buds::commands::FIT_TEST)
+            .filter(|p| p.command == realme_buds::devices::air7::commands::FIT_TEST)
             .map(|p| p.payload.clone())
             .collect::<Vec<_>>(),
         vec![vec![1], vec![0]]

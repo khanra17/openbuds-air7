@@ -1,10 +1,11 @@
 # States and API use
 
 ```rust,no_run
-use realme_buds::{Client,Component,wearing_summary,transport::windows::RfcommStream};
+use realme_buds::devices::air7::{Client, Component, wearing_summary, CONTROL_SERVICE};
+use realme_buds_windows::RfcommStream;
 fn main() -> Result<(),Box<dyn std::error::Error>> {
     let address = std::env::var("BUDS_ADDRESS")?;
-    let mut buds=Client::new(RfcommStream::connect(&address)?);
+    let mut buds=Client::new(RfcommStream::connect_service(&address, CONTROL_SERVICE)?);
     buds.initialize()?;
     let s=buds.snapshot();
     println!("{:?}",s.wearing_summary());

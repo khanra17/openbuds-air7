@@ -6,14 +6,16 @@ license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
 readme = "README.md"
-description = "Transport-independent, reverse-engineered realme Buds Air7 control protocol"
+description = "Transport-independent, explicitly model-scoped Realme earbud SDK"
+
+[features]
+default = []
+json = ["dep:serde_json"]
 
 [dependencies]
 serde.workspace = true
 thiserror.workspace = true
-
-[target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.61", features = ["Win32_Networking_WinSock", "Win32_Devices_Bluetooth", "Win32_Foundation"] }
+serde_json = { workspace = true, optional = true }
 
 [dev-dependencies]
 serde_json.workspace = true

@@ -1,9 +1,10 @@
 [workspace]
-members = ["crates/realme-buds", "crates/buds-cli", "crates/buds-desktop"]
+members = ["crates/realme-buds", "crates/realme-buds-windows", "crates/realme-buds-ffi", "apps/cli", "apps/desktop"]
+default-members = ["crates/realme-buds", "crates/realme-buds-windows", "crates/realme-buds-ffi"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 license = "GPL-3.0-or-later"
 rust-version = "1.88"

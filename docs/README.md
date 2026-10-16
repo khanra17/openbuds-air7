@@ -13,7 +13,10 @@
 
 - [Development](development.md)
 - [Architecture](architecture.md)
-- [Library API](../crates/realme-buds/README.md)
+- [Typed Rust SDK](../crates/realme-buds/README.md)
+- [Native SDK / C ABI](ffi.md)
+- [Adding independent device drivers](adding-devices.md)
+- [SDK archive instructions](sdk-package.md)
 - [States and API examples](states-and-api.md)
 - [Protocol reference](protocol.md)
 - [Research methodology](research.md)

@@ -1,0 +1,21 @@
+[package]
+name = "buds-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "OpenBuds Air7 command-line Bluetooth controller"
+
+[[bin]]
+name = "buds"
+path = "src/main.rs"
+
+[dependencies]
+realme-buds = { path = "../../crates/realme-buds" }
+serde_json.workspace = true
+serde.workspace = true
+clap = { version = "4", features = ["derive"] }
+
+[target.'cfg(windows)'.dependencies]
+realme-buds-windows = { path = "../../crates/realme-buds-windows" }

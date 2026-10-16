@@ -12,14 +12,14 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FORBIDDEN_PARTS = {"research", "target", ".pi", "__pycache__", "node_modules"}
-FORBIDDEN_SUFFIXES = {".apk", ".ipa", ".btsnoop", ".pcap", ".pcapng", ".log", ".jsonl", ".pyc", ".exe", ".dll", ".pdb"}
+FORBIDDEN_SUFFIXES = {".apk", ".ipa", ".btsnoop", ".pcap", ".pcapng", ".log", ".jsonl", ".pyc", ".exe", ".dll", ".pdb", ".so", ".dylib", ".a", ".lib", ".zip", ".gz", ".7z"}
 MAC = re.compile(r"(?i)(?<![0-9a-f])(?:[0-9a-f]{2}:){5}[0-9a-f]{2}(?![0-9a-f])")
 # Only deliberately synthetic byte-order fixtures, and only inside the test tree.
 SYNTHETIC_TEST_MACS = {":".join(f"{i:02X}" for i in values) for values in (range(1, 7), range(6, 0, -1))}
 HOME_PATH = re.compile(r"(?i)(?:[a-z]:[/\\]Users[/\\][^\s/\\\"<>]+|/(?:home|Users)/[^\s/\"<>]+)")
 SECRET = re.compile(r"(?:gh[pousr]_[A-Za-z0-9_]{30,}|github_pat_[A-Za-z0-9_]{30,}|AKIA[0-9A-Z]{16}|-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----)")
 LINK = re.compile(r"!?\[[^\]]*\]\(([^\s)]+)(?:\s+[^)]*)?\)")
-TEXT_SUFFIXES = {".rs", ".md", ".toml", ".yml", ".yaml", ".json", ".py", ".svg", ".txt", ".hbs"}
+TEXT_SUFFIXES = {".rs", ".md", ".toml", ".yml", ".yaml", ".json", ".py", ".svg", ".txt", ".hbs", ".h", ".hpp", ".c", ".cc", ".cpp"}
 
 
 def text_issues(path: str, text: str) -> list[str]:

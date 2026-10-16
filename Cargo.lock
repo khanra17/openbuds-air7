@@ -194,20 +194,22 @@ dependencies = [
 
 [[package]]
 name = "buds-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "realme-buds",
+ "realme-buds-windows",
  "serde",
  "serde_json",
 ]
 
 [[package]]
 name = "buds-desktop"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "eframe",
  "realme-buds",
+ "realme-buds-windows",
  "serde_json",
 ]
 
@@ -1918,11 +1920,28 @@ checksum = "20675572f6f24e9e76ef639bc5552774ed45f1c30e2951e1e99c59888861c539"
 
 [[package]]
 name = "realme-buds"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "realme-buds-ffi"
+version = "0.2.0"
+dependencies = [
+ "realme-buds",
+ "realme-buds-windows",
+ "serde_json",
+]
+
+[[package]]
+name = "realme-buds-windows"
+version = "0.2.0"
+dependencies = [
+ "realme-buds",
+ "serde",
  "windows-sys 0.61.2",
 ]
 

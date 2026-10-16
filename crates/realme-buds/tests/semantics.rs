@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright 2026 OpenBuds contributors
-use realme_buds::*;
+use realme_buds::Transport;
+use realme_buds::devices::air7::*;
 use std::{collections::VecDeque, io, time::Duration};
 #[derive(Default)]
 struct Wire {

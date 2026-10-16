@@ -6,7 +6,7 @@
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-1.88%2B-orange)](docs/development.md)
 
-An independent Rust library, Windows desktop app and CLI for **realme Buds Air7**. Control the earbuds directly over Bluetooth Classic RFCOMM—no phone bridge, account or cloud login at runtime.
+An independent device SDK with a typed Rust API, versioned **C ABI**, and separate Windows desktop/CLI applications. The implemented driver is **realme Buds Air7**. It controls the earbuds directly over Bluetooth Classic RFCOMM—no phone bridge, account or cloud login at runtime.
 
 **Early development, not complete realme Link parity.** Verified setting readback is not proof of every physical behavior or state combination. Firmware flashing is intentionally excluded. Only Air7 has been hardware-validated.
 
@@ -33,7 +33,9 @@ See the [coverage ledger](docs/coverage.md) and [state/UI/transport audit](docs/
 
 ## Get started
 
-Requires Windows, Rust 1.88+ and the MSVC C++ build tools with a Windows SDK. Pair the Air7 in Windows Bluetooth settings first.
+**Without Rust:** download a matching native SDK or Windows application archive from [releases](https://github.com/khanra17/openbuds-air7/releases). The SDK includes shared libraries, a C header, C/Python examples and license notices; it does not require the desktop app. See [FFI integration](docs/ffi.md).
+
+**Build the Windows apps:** requires Rust 1.88+ and MSVC C++ tools with a Windows SDK. Pair the Air7 in Windows Bluetooth settings first.
 
 ```powershell
 git clone https://github.com/khanra17/openbuds-air7.git
@@ -69,11 +71,12 @@ Output is named JSON, with raw IDs retained. Enabling ANC requires a level: the 
 ### Reuse the library
 
 ```rust,no_run
-use realme_buds::{AncLevel, Client, transport::windows::RfcommStream};
+use realme_buds::devices::air7::{AncLevel, Client, CONTROL_SERVICE};
+use realme_buds_windows::RfcommStream;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let address = std::env::var("BUDS_ADDRESS")?;
-    let mut buds = Client::new(RfcommStream::connect(&address)?);
+    let mut buds = Client::new(RfcommStream::connect_service(&address, CONTROL_SERVICE)?);
     buds.initialize()?;
     println!("{:#?}", buds.snapshot().describe());
     buds.set_anc_enabled(true, Some(AncLevel::Moderate))?;
@@ -81,7 +84,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The protocol, state interpretation, setters, event collection and safety helpers live in [`realme-buds`](crates/realme-buds/README.md), not the frontends.
+Add the SDK and separate Windows adapter as dependencies for this example. Device behavior lives in [`realme-buds::devices::air7`](crates/realme-buds/README.md), not the frontends. The core has no GUI/native Bluetooth dependency; its JSON API is optional.
+
+For C, C++, Python, C#, Go or future mobile hosts, use the [native SDK](docs/ffi.md). Other hosts can supply timed stream callbacks. No Android application/JNI wrapper or native Linux/macOS Bluetooth adapter is shipped yet. Future models get [independent drivers](docs/adding-devices.md), not inherited Air7 opcodes or modes.
 
 ## Architecture
 
@@ -89,9 +94,12 @@ The protocol, state interpretation, setters, event collection and safety helpers
 
 | Path | Responsibility |
 | --- | --- |
-| `crates/realme-buds` | Codec, typed/raw models, semantic descriptions, client and transports |
-| `crates/buds-cli` | Argument parsing and JSON command interface |
-| `crates/buds-desktop` | Presentation, UI preferences, Bluetooth worker and offline demo |
+| `crates/realme-buds` | Platform-neutral SDK; explicit device modules and stream contract |
+| `crates/realme-buds-windows` | Model-neutral Windows RFCOMM adapter; explicit service UUID |
+| `crates/realme-buds-ffi` | Versioned C ABI, checked handles, callbacks, buffers and per-thread errors |
+| `apps/cli` | Air7 argument parsing and command output |
+| `apps/desktop` | Air7 presentation, UI preferences, Bluetooth worker and offline demo |
+| `include`, `examples` | C header and standalone C/Python consumers |
 | `docs` | User guides, protocol facts, safety, compatibility and state boundaries |
 | `scripts/check_repository.py` | Maintained publication/privacy gate used by CI |
 

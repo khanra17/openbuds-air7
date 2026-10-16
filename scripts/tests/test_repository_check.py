@@ -25,6 +25,10 @@ class PublicationGateTests(unittest.TestCase):
         self.assertIn("credential/private-key pattern", GATE.text_issues("sample.rs", token))
         self.assertIn("developer home-directory path", GATE.text_issues("sample.rs", home))
 
+    def test_native_sources_are_audited_and_binaries_are_not_committable(self):
+        self.assertTrue({".h", ".hpp", ".c", ".cpp"}.issubset(GATE.TEXT_SUFFIXES))
+        self.assertTrue({".dll", ".so", ".dylib", ".lib", ".zip"}.issubset(GATE.FORBIDDEN_SUFFIXES))
+
     def test_png_text_metadata_is_rejected(self):
         data = b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 0) + b"tEXt" + b"\x00" * 4
         self.assertTrue(GATE.png_issues(data))
