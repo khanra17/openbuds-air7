@@ -10,7 +10,7 @@ description = "OpenBuds Air7 desktop Bluetooth controller"
 [dependencies]
 realme-buds = { path = "../../crates/realme-buds" }
 serde_json.workspace = true
-eframe = { version = "0.33", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }
+eframe = { version = "0.36", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }
 
 [target.'cfg(windows)'.dependencies]
 realme-buds-windows = { path = "../../crates/realme-buds-windows" }
